@@ -30,20 +30,20 @@
 	'It can be modified using the Windows Form Designer.
 	'Do not modify it using the code editor.
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.txtNotice = New System.Windows.Forms.TextBox
-        Me.cmdEmailTest = New System.Windows.Forms.Button
-        Me.chkSMTPtest = New System.Windows.Forms.CheckBox
-        Me.chkDontSendMail = New System.Windows.Forms.CheckBox
-        Me.chkDontUpdateDatabase = New System.Windows.Forms.CheckBox
-        Me.cmdSetDates = New System.Windows.Forms.Button
-        Me.txtDueDate = New System.Windows.Forms.TextBox
-        Me.txtCalendar = New System.Windows.Forms.TextBox
-        Me.cmdDueDate = New System.Windows.Forms.Button
-        Me.cmdEmailNotices = New System.Windows.Forms.Button
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.chkShowMessages = New System.Windows.Forms.CheckBox
+        Me.txtNotice = New System.Windows.Forms.TextBox()
+        Me.cmdEmailTest = New System.Windows.Forms.Button()
+        Me.chkSMTPtest = New System.Windows.Forms.CheckBox()
+        Me.chkDontSendMail = New System.Windows.Forms.CheckBox()
+        Me.chkDontUpdateDatabase = New System.Windows.Forms.CheckBox()
+        Me.cmdSetDates = New System.Windows.Forms.Button()
+        Me.txtDueDate = New System.Windows.Forms.TextBox()
+        Me.txtCalendar = New System.Windows.Forms.TextBox()
+        Me.cmdDueDate = New System.Windows.Forms.Button()
+        Me.cmdEmailNotices = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.chkShowMessages = New System.Windows.Forms.CheckBox()
         Me.SuspendLayout()
         '
         'txtNotice
@@ -201,7 +201,7 @@
         Me.Label1.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Label1.Size = New System.Drawing.Size(181, 21)
         Me.Label1.TabIndex = 11
-        Me.Label1.Text = "2015-Jan-26  8:25"
+        Me.Label1.Text = "2015-Apr-27  17:35"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'chkShowMessages

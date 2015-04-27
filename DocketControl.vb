@@ -688,4 +688,5 @@ HTMLbody_Error:
             NoticeLabel = NoticeLabel & ":" & strHTMLspace
         End If
     End Function
+
 End Class
