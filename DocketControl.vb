@@ -202,7 +202,7 @@ EmailTest_Error:
                         rstNotify.Open("select Email from v_NotifyEmail where Email <> 'Admin' and DocketID = " & .Fields("DocketID").Value & " ORDER BY Email", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
                         With rstNotify
                             If .EOF Then
-                                strHTML = "<HTML><BODY><font color=""red""<P>" & "This is a message from the DocketControl Agent.<BR>" & _
+                                strHTML = "<HTML><BODY><font color=""red""<P>" & _
                                                   "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
                                 If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                                     strTo = strGordonPrince
@@ -211,7 +211,7 @@ EmailTest_Error:
                                 End If
                                 Email.To.Add(New MailAddress(strTo))
                             Else
-                                strHTML = "<HTML><BODY><font color=""blue""<P><I>" & "This is a message from the DocketControl Agent.</I></font></P>"
+                                strHTML = "<HTML><BODY>"
                                 strTo1 = .Fields("Email").Value & "@evanspetree.com"
                                 If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                                     Email.To.Add(New MailAddress(strGordonPrince))
@@ -248,7 +248,7 @@ EmailTest_Error:
                     If Me.chkSMTPtest.CheckState = CheckState.Unchecked Then Email.To.Add(New MailAddress(strAdminEmail))
 
                     If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
-                        Email.Body = strHTML & "<HR>" & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
+                        Email.Body = strHTML & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
                         SMTP.Send(Email)
                     End If
                 End Using
@@ -437,7 +437,7 @@ HaveSubject:
                     rstNotify.Open("select Email from v_NotifyEmail where Email <> 'Admin' and DocketID = " & .Fields("DocketID").Value & " ORDER BY Email", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
                     With rstNotify
                         If .EOF Then
-                            strHTML = "<HTML><BODY><P><font color=""red""" & "This is a message from the DocketControl Agent.<BR>" & _
+                            strHTML = "<HTML><BODY><P><font color=""red""" & _
                                               "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
                             If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                                 strTo = strGordonPrince
@@ -613,7 +613,9 @@ CheckIfHoliday:
             strHTML = strCourierOn & "MATTER ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>" & .Fields("MatterID").Value & "<BR>" & _
                               strCourierOn & "CLIENT:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>" & .Fields("ClientName").Value & "<BR>" & _
                               strCourierOn & "MATTER:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>" & .Fields("MatterName").Value & "</P><P>"
-
+            If .Fields("Trademark").Value Then
+                If Not IsDBNull(.Fields("MarkID").Value) Then strHTML = strHTML & strCourierOn & "MARK ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>" & .Fields("MarkID").Value & "<BR>"
+            End If
             If IsDBNull(.Fields("Event").Value) Then
                 strScratch = vbNullString
             Else
@@ -633,6 +635,7 @@ CheckIfHoliday:
             If Not IsDBNull(.Fields("Memo").Value) Then strHTML = strHTML & strCourierOn & "MEMO:</font><BR>" & Replace(.Fields("Memo").Value, vbNewLine, "<BR>")
             strHTML = strHTML & "<HR>"
             If .Fields("Trademark").Value Then
+                ' If Not IsDBNull(.Fields("MarkID").Value) Then strHTML = strHTML & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MarkID:&nbsp;</font>" & .Fields("MarkID").Value & "<BR>"
                 If Not IsDBNull(.Fields("Notice1").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("Notice1").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("Notice1").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("Notice2").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("Notice2").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("Notice2").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("TmNotice30").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("TmNotice30").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("TmNotice30").Value).ToString("MMM d, yyyy") & "<BR>"
