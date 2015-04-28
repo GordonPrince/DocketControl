@@ -9,10 +9,10 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("DocketControl")> 
-<Assembly: AssemblyDescription("Email notfications for DocketControl")> 
+<Assembly: AssemblyDescription("E-mail notfications for DocketControl")> 
 <Assembly: AssemblyCompany("Evans | Petree PC")> 
-<Assembly: AssemblyProduct("DocketControl Emailer")> 
-<Assembly: AssemblyCopyright("Copyright © 1997-2013 Tekhelps, Inc")> 
+<Assembly: AssemblyProduct("DocketControl E-mailer")> 
+<Assembly: AssemblyCopyright("Copyright © 1997-2015 Tekhelps, Inc")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("2.1.3.7")> 
-<Assembly: AssemblyFileVersion("2.1.3.7")> 
+<Assembly: AssemblyVersion("12.1.1.1")> 
+<Assembly: AssemblyFileVersion("12.1.1.1")> 
