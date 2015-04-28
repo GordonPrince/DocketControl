@@ -498,7 +498,7 @@ HaveSubject:
                     End If
 
                     If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
-                        Email.Body = strHTML & "<HR>" & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
+                        Email.Body = strHTML & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
                         SMTP.Send(Email)
                     End If
                 End Using
