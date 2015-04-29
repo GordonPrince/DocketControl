@@ -633,15 +633,27 @@ CheckIfHoliday:
             strHTML = strHTML & Replace(strCourierOn, "blue", "red") & "DUE DATE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color=""red""><strong>" & CDate(.Fields("DueDate").Value).ToString("MMM d, yyyy (ddd)") & "</strong></font><BR>" & _
                                                  strCourierOn & "NOTIFY:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>" & strTo & "<BR>"
             If Not IsDBNull(.Fields("Memo").Value) Then strHTML = strHTML & strCourierOn & "MEMO:</font><BR>" & Replace(.Fields("Memo").Value, vbNewLine, "<BR>")
-            strHTML = strHTML & "<HR>"
             If .Fields("Trademark").Value Then
-                ' If Not IsDBNull(.Fields("MarkID").Value) Then strHTML = strHTML & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MarkID:&nbsp;</font>" & .Fields("MarkID").Value & "<BR>"
+                If Not IsDBNull(.Fields("Notice1").Value) Or
+                    Not IsDBNull(.Fields("Notice2").Value) Or
+                    Not IsDBNull(.Fields("TmNotice30").Value) Or
+                    Not IsDBNull(.Fields("TmNotice7").Value) Or
+                    Not IsDBNull(.Fields("NoticeFinal").Value) Then
+                    strHTML = strHTML & "<HR>"
+                End If
                 If Not IsDBNull(.Fields("Notice1").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("Notice1").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("Notice1").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("Notice2").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("Notice2").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("Notice2").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("TmNotice30").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("TmNotice30").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("TmNotice30").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("TmNotice7").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("TmNotice7").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("TmNotice7").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("NoticeFinal").Value) Then strHTML = strHTML & strCourierOn & NoticeLabel(DateDiff(DateInterval.Day, .Fields("NoticeFinal").Value, .Fields("DueDate").Value), True) & "</font>" & CDate(.Fields("NoticeFinal").Value).ToString("MMM d, yyyy")
             Else
+                If Not IsDBNull(.Fields("NoticeFinal").Value) Or
+                    Not IsDBNull(.Fields("Notice2").Value) Or
+                    Not IsDBNull(.Fields("Notice1").Value) Or
+                    Not IsDBNull(.Fields("Court").Value) Or
+                    Not IsDBNull(.Fields("DocketNo").Value) Then
+                    strHTML = strHTML & "<HR>"
+                End If
                 If Not IsDBNull(.Fields("NoticeFinal").Value) Then strHTML = strHTML & strCourierOn & "FINAL&nbsp;&nbsp;NOTICE: </font>" & CDate(.Fields("NoticeFinal").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("Notice2").Value) Then strHTML = strHTML & strCourierOn & "SECOND NOTICE: </font>" & CDate(.Fields("Notice2").Value).ToString("MMM d, yyyy") & "<BR>"
                 If Not IsDBNull(.Fields("Notice1").Value) Then strHTML = strHTML & strCourierOn & "FIRST&nbsp;&nbsp;NOTICE: </font>" & CDate(.Fields("Notice1").Value).ToString("MMM d, yyyy") & "<BR>"
