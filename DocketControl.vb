@@ -242,7 +242,7 @@ EmailTest_Error:
 
                     ' 1/16/2013 added this
                     If .Fields("Completed").Value <> 0 Then
-                        strHTML = strHTML & "<font color=""red""><strong>This item was " & .Fields("CompletedBy").Value & "</strong></font>"
+                        strHTML = strHTML & "<font color=""red""><strong>This item was " & .Fields("CompletedBy").Value & "</strong></font></P><P>"
                     End If
 
                     If Me.chkSMTPtest.CheckState = CheckState.Unchecked Then Email.To.Add(New MailAddress(strAdminEmail))
