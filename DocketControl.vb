@@ -92,7 +92,7 @@ Form_Load_Error:
                 .EnableSsl = True
                 .Port = 587
             Else
-                .Host = "EPExchange"
+                .Host = "EXCH2013"
                 .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
                 .Port = 25
             End If
@@ -351,7 +351,7 @@ EmailDueDate_Error:
                 .EnableSsl = True
                 .Port = 587
             Else
-                .Host = "EPExchange"
+                .Host = "EXCH2013"
                 .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
                 .Port = 25
             End If
