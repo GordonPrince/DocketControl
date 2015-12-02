@@ -20,12 +20,14 @@ Friend Class Form1
     Const strDocketIPEmail As String = "DocketIP@EvansPetree.com"
     Const strGordonPrince As String = "gordon.prince@tekhelps.onmicrosoft.com"
     Const strHTMLspace As String = "&nbsp;"
+    Const strHost As String = "EXCH2013" ' 12/3/2015 changed from "EPExchange"
     Dim bDev As Boolean
     Dim strHTML As String
     Dim RetVal As Object
     Dim strScratch As String
     Dim cnn As ADODB.Connection = New ADODB.Connection()
     Dim rst As ADODB.Recordset
+    Dim strDeadlines As String
 
     Private Sub Form1_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         On Error GoTo Form_Load_Error
@@ -92,7 +94,7 @@ Form_Load_Error:
                 .EnableSsl = True
                 .Port = 587
             Else
-                .Host = "EXCH2013"
+                .Host = strHost
                 .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
                 .Port = 25
             End If
@@ -159,7 +161,7 @@ EmailTest_Error:
                 .EnableSsl = True
                 .Port = 587
             Else
-                .Host = "EXCH2013" ' "EPExchange"
+                .Host = strHost
                 .Credentials = New NetworkCredential(strDocketControlEmail, "friday15")
                 .Port = 25
             End If
@@ -284,23 +286,25 @@ FinishedLoop:
 
         If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
             ' notify the administrator what was done
-            Using Email As New MailMessage
-                With Email
-                    .IsBodyHtml = True
-                    .From = New MailAddress(strDocketControlEmail)
-                    .Subject = "Docket Control DueDate Summary"
-                    If Me.chkSMTPtest.CheckState = CheckState.Checked Then
-                        .To.Add(New MailAddress(strGordonPrince))
-                    Else
-                        .To.Add(New MailAddress(strAdminEmail))
-                        .Bcc.Add(New MailAddress(strDocketControlEmail))
-                    End If
-                    .Body = "<P>" & intCounter & " Emails were sent for DueDates through " & datCriteria & "</P>"
-                End With
-                ' wait 1.5 seconds to make sure the summary email is the last one sent
-                System.Threading.Thread.Sleep(1500)
-                SMTP.Send(Email)
-            End Using
+            'Using Email As New MailMessage
+            '    With Email
+            '        .IsBodyHtml = True
+            '        .From = New MailAddress(strDocketControlEmail)
+            '        .Subject = "Docket Control DueDate Summary"
+            '        If Me.chkSMTPtest.CheckState = CheckState.Checked Then
+            '            .To.Add(New MailAddress(strGordonPrince))
+            '        Else
+            '            .To.Add(New MailAddress(strAdminEmail))
+            '            .Bcc.Add(New MailAddress(strDocketControlEmail))
+            '        End If
+            '        .Body = "<P>" & intCounter & " Emails were sent for DueDates through " & datCriteria & "</P>"
+            '    End With
+            '    ' wait 1.5 seconds to make sure the summary email is the last one sent
+            '    System.Threading.Thread.Sleep(1500)
+            '    SMTP.Send(Email)
+            'End Using
+            '12/3/2015 changed this so only one email goes out daily
+            strDeadlines = intCounter & " E-mails were sent with DueDates through " & datCriteria
         End If
         If Me.chkShowMessages.CheckState = CheckState.Checked Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         SMTP = Nothing
@@ -351,7 +355,7 @@ EmailDueDate_Error:
                 .EnableSsl = True
                 .Port = 587
             Else
-                .Host = "EXCH2013"
+                .Host = strHost
                 .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
                 .Port = 25
             End If
@@ -360,7 +364,7 @@ EmailDueDate_Error:
         cnn = New ADODB.Connection
         cnn.Open("Provider=MSDataShape.1;Persist Security Info=False;Data Source=" & strIPaddress & ";Integrated Security=SSPI;Initial Catalog=DocketControl;Data Provider=SQLOLEDB.1")
         rst = New ADODB.Recordset
-        strSQL = "select * from Docket WHERE (DocketID = 34142) AND (DueDateEmailed IS NULL) AND (Completed = 0) AND (Canceled = 0) " & _
+        strSQL = "select * from Docket WHERE (DueDateEmailed IS NULL) AND (Completed = 0) AND (Canceled = 0) " & _
                             "AND ((Trademark = 0) OR (Trademark = 1 AND MarkID > 0)) " & _
                             "AND ((NoticeFinal <= '" & datCriteria & "' AND NoticeFinalEmailed is null)" & _
                                         " OR (TmNotice7 <= '" & datCriteria & "' AND TmNotice7Emailed is null)" & _
@@ -368,7 +372,7 @@ EmailDueDate_Error:
                                         " OR (Notice2 <= '" & datCriteria & "' AND Notice2Emailed is null)" & _
                                         " OR (Notice1 <= '" & datCriteria & "' AND Notice1Emailed is null))" & _
                         " ORDER BY DueDate, DocketID"
-        Debug.WriteLine(strSQL)
+        'Debug.WriteLine(strSQL)
         With rst
             .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockOptimistic, ADODB.CommandTypeEnum.adCmdText)
             Do Until .EOF
@@ -564,10 +568,15 @@ FinishedLoop:
                         .To.Add(New MailAddress(strAdminEmail))
                         .Bcc.Add(New MailAddress(strDocketControlEmail))
                     End If
-                    .Body = "<P>" & intCounter & " Emails were sent for Notices through " & datCriteria & "</P>"
+                    If Len(strDeadlines) > 0 Then
+                        .Body = "<P>" & strDeadlines & "<BR>"
+                    Else
+                        .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font><BR>"
+                    End If
+                    .Body = intCounter & " E-mails were sent for non-deadline Notices through " & datCriteria & "</P>"
                 End With
-                ' wait 5 seconds to make sure the summary email is the last one sent
-                System.Threading.Thread.Sleep(1500)
+                ' wait 2 seconds to make sure the summary email is the last one sent
+                System.Threading.Thread.Sleep(2000)
                 SMTP.Send(Email)
             End Using
         End If
