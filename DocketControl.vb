@@ -318,10 +318,9 @@ EmailDueDate_Error:
     End Sub
 
     Private Sub cmdEmailNotices_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdEmailNotices.Click
-        On Error GoTo EmailNotices_Error
         Const strTitle As String = "Email Notices"
-        Dim datCriteria, datCalendar As Date
-        Dim strSQL, strNotify As String
+        Dim datCriteria As Date, datCalendar As Date
+        Dim strSQL As String
         Dim rstMark As New ADODB.Recordset, rstNotify As New ADODB.Recordset
         Dim bMark As Boolean, strFolder As String, strFile As String
         Dim SMTP As New SmtpClient
@@ -336,8 +335,12 @@ EmailDueDate_Error:
         End If
         strFolder = strFolder & "\ShowIP\"
 
-        datCalendar = CDate(Me.txtCalendar.Text)
-        datCriteria = CDate(Me.txtNotice.Text)
+        Try
+            datCalendar = CDate(Me.txtCalendar.Text)
+            datCriteria = CDate(Me.txtNotice.Text)
+        Catch ex As Exception
+            MsgBox("Invalid date entered on form.")
+        End Try
 
         ' even if there are no items, an email will be sent to the strAdmin to that effect. So SMTP needs to be initialized
         With SMTP
@@ -357,7 +360,7 @@ EmailDueDate_Error:
         cnn = New ADODB.Connection
         cnn.Open("Provider=MSDataShape.1;Persist Security Info=False;Data Source=" & strIPaddress & ";Integrated Security=SSPI;Initial Catalog=DocketControl;Data Provider=SQLOLEDB.1")
         rst = New ADODB.Recordset
-        strSQL = "select * from Docket WHERE (DueDateEmailed IS NULL) AND (Completed = 0) AND (Canceled = 0) " & _
+        strSQL = "select * from Docket WHERE (DocketID = 34142) AND (DueDateEmailed IS NULL) AND (Completed = 0) AND (Canceled = 0) " & _
                             "AND ((Trademark = 0) OR (Trademark = 1 AND MarkID > 0)) " & _
                             "AND ((NoticeFinal <= '" & datCriteria & "' AND NoticeFinalEmailed is null)" & _
                                         " OR (TmNotice7 <= '" & datCriteria & "' AND TmNotice7Emailed is null)" & _
@@ -365,6 +368,7 @@ EmailDueDate_Error:
                                         " OR (Notice2 <= '" & datCriteria & "' AND Notice2Emailed is null)" & _
                                         " OR (Notice1 <= '" & datCriteria & "' AND Notice1Emailed is null))" & _
                         " ORDER BY DueDate, DocketID"
+        Debug.WriteLine(strSQL)
         With rst
             .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockOptimistic, ADODB.CommandTypeEnum.adCmdText)
             Do Until .EOF
@@ -569,14 +573,6 @@ FinishedLoop:
         End If
         If Me.chkShowMessages.CheckState Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         Exit Sub
-
-EmailNotices_Error:
-        If Me.chkShowMessages.CheckState Then
-            If MsgBox(Err.Description & vbNewLine & vbNewLine & "Debug?", MsgBoxStyle.Exclamation + MsgBoxStyle.YesNo, strTitle) = MsgBoxResult.Yes Then
-                Stop
-                Resume
-            End If
-        End If
     End Sub
 
     Private Function IsHoliday(ByVal datB As Date) As Boolean
