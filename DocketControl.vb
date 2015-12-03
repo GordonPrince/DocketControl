@@ -304,7 +304,7 @@ FinishedLoop:
             '    SMTP.Send(Email)
             'End Using
             '12/3/2015 changed this so only one email goes out daily
-            strDeadlines = intCounter & " E-mails were sent with DueDates through " & datCriteria
+            strDeadlines = intCounter & " deadline E-mails were sent for items with DueDates on or before " & datCriteria
         End If
         If Me.chkShowMessages.CheckState = CheckState.Checked Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         SMTP = Nothing
@@ -555,7 +555,7 @@ FinishedLoop:
         'UPGRADE_NOTE: Object cnn may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
         cnn = Nothing
 
-        If Me.chkDontSendMail.CheckState = CheckState.Unchecked And bDev = False Then
+        If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
             ' notify the administrator what was done
             Using Email As New MailMessage
                 With Email
@@ -569,11 +569,11 @@ FinishedLoop:
                         .Bcc.Add(New MailAddress(strDocketControlEmail))
                     End If
                     If Len(strDeadlines) > 0 Then
-                        .Body = "<P>" & strDeadlines & "<BR>"
+                        .Body = "<P>" & strDeadlines & "</P>"
                     Else
-                        .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font><BR>"
+                        .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font></P>"
                     End If
-                    .Body = intCounter & " E-mails were sent for non-deadline Notices through " & datCriteria & "</P>"
+                    .Body = .Body & intCounter & " reminder E-mails were sent for items with Notice dates through " & datCriteria & "</P>"
                 End With
                 ' wait 2 seconds to make sure the summary email is the last one sent
                 System.Threading.Thread.Sleep(2000)
@@ -591,7 +591,7 @@ FinishedLoop:
             IsHoliday = True
             Exit Function
         End If
-        ' cnn = New ADODB.Connection
+        'cnn = New ADODB.Connection
         cnn.Open("Provider=MSDataShape.1;Persist Security Info=False;Data Source=" & strIPaddress & ";Integrated Security=SSPI;Initial Catalog=DocketControl;Data Provider=SQLOLEDB.1")
         rstH = New ADODB.Recordset
         With rstH
@@ -607,7 +607,7 @@ CheckIfHoliday:
         End With
         rstH = Nothing
         cnn.Close()
-        ' cnn = Nothing
+        'cnn = Nothing
     End Function
 
     Private Function HTMLbody(ByRef rst As ADODB.Recordset, ByRef strTo As String) As String
