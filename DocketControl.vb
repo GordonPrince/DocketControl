@@ -27,7 +27,7 @@ Friend Class Form1
     Dim strScratch As String
     Dim cnn As ADODB.Connection = New ADODB.Connection()
     Dim rst As ADODB.Recordset
-    Dim strDeadlines As String
+    Dim strDeadlines As String = vbNullString
 
     Private Sub Form1_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         On Error GoTo Form_Load_Error
@@ -290,25 +290,9 @@ FinishedLoop:
 
         If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
             ' notify the administrator what was done
-            'Using Email As New MailMessage
-            '    With Email
-            '        .IsBodyHtml = True
-            '        .From = New MailAddress(strDocketControlEmail)
-            '        .Subject = "Docket Control DueDate Summary"
-            '        If Me.chkSMTPtest.CheckState = CheckState.Checked Then
-            '            .To.Add(New MailAddress(strGordonPrince))
-            '        Else
-            '            .To.Add(New MailAddress(strAdminEmail))
-            '            .Bcc.Add(New MailAddress(strDocketControlEmail))
-            '        End If
-            '        .Body = "<P>" & intCounter & " Emails were sent for DueDates through " & datCriteria & "</P>"
-            '    End With
-            '    ' wait 1.5 seconds to make sure the summary email is the last one sent
-            '    System.Threading.Thread.Sleep(1500)
-            '    SMTP.Send(Email)
-            'End Using
             '12/3/2015 changed this so only one email goes out daily
-            strDeadlines = intCounter & " deadline E-mails were sent for items with DueDates on or before " & datCriteria
+            strDeadlines = "<P>" & IIf(intCounter = 1, "One deadline E-mail was", intCounter & " deadline E-mails were") & _
+                            " sent for items with DueDates on or before " & datCriteria & ".</P>"
         End If
         If Me.chkShowMessages.CheckState = CheckState.Checked Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         SMTP = Nothing
@@ -578,11 +562,12 @@ FinishedLoop:
                         .Bcc.Add(New MailAddress(strDocketControlEmail))
                     End If
                     If Len(strDeadlines) > 0 Then
-                        .Body = "<P>" & strDeadlines & "</P>"
+                        .Body = strDeadlines
                     Else
                         .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font></P>"
                     End If
-                    .Body = .Body & intCounter & " reminder E-mails were sent for items with Notice dates through " & datCriteria & "</P>"
+                    .Body = .Body & IIf(intCounter = 1, "One reminder E-mail was", intCounter & " reminder E-mails were") & _
+                            " sent for items with Notice dates through " & datCriteria & ".</P>"
                 End With
                 ' wait 2 seconds to make sure the summary email is the last one sent
                 System.Threading.Thread.Sleep(2000)
@@ -806,6 +791,8 @@ HTMLbody_Error:
                             strTo = rst.Fields("ResponsibleAtty").Value & "@evanspetree.com"
                         End If
                         .To.Add(New MailAddress(strTo))
+                        ' this is here because I want to confirm it's working in live operation once or twice
+                        .Bcc.Add(New MailAddress(strGordonPrince))
                     End With
                     strFile = strFolder & "Mark" & CStr(rst.Fields("MarkID").Value) & ".bat"
                     'Pass the file path and the file name to the StreamWriter constructor.
@@ -856,6 +843,9 @@ FinishedLoop:
             .Close()
         End With
         cnn.Close()
+        strDeadlines = strDeadlines & "</P><P>" & _
+                       IIf(intCounter = 1, "One reminder E-mail was", intCounter & " reminder E-mails were") & _
+                       " sent for " & IIf(intCounter = 1, "a Suspended IP mark", "Suspended IP marks") & ".</P>"
 
         If Me.chkShowMessages.CheckState Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         Exit Sub
