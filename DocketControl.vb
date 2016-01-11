@@ -561,11 +561,12 @@ FinishedLoop:
                 With Email
                     .IsBodyHtml = True
                     .From = New MailAddress(strDocketControlEmail)
-                    .Subject = "Docket Control Notices Summary"
+                    .Subject = "Docket Control E-mail Summary"
                     If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                         .To.Add(New MailAddress(strGordonPrince))
                     Else
                         .To.Add(New MailAddress(strAdminEmail))
+                        .To.Add(New MailAddress("bboone@evanspetree.com"))
                         .Bcc.Add(New MailAddress(strDocketControlEmail))
                     End If
                     If Len(strDeadlines) > 0 Then
