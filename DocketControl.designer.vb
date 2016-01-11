@@ -44,6 +44,7 @@
         Me.cmdEmailNotices = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.chkShowMessages = New System.Windows.Forms.CheckBox()
+        Me.SendIP = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'txtNotice
@@ -201,7 +202,7 @@
         Me.Label1.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Label1.Size = New System.Drawing.Size(181, 21)
         Me.Label1.TabIndex = 11
-        Me.Label1.Text = "2015-Dec-3  6:40"
+        Me.Label1.Text = "2016-Jan-11  17:05"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'chkShowMessages
@@ -218,12 +219,27 @@
         Me.chkShowMessages.Text = "Show Messages"
         Me.chkShowMessages.UseVisualStyleBackColor = False
         '
+        'SendIP
+        '
+        Me.SendIP.BackColor = System.Drawing.SystemColors.Control
+        Me.SendIP.Cursor = System.Windows.Forms.Cursors.Default
+        Me.SendIP.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.SendIP.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.SendIP.Location = New System.Drawing.Point(40, 238)
+        Me.SendIP.Name = "SendIP"
+        Me.SendIP.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.SendIP.Size = New System.Drawing.Size(181, 41)
+        Me.SendIP.TabIndex = 13
+        Me.SendIP.Text = "Send IP Emails"
+        Me.SendIP.UseVisualStyleBackColor = False
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(550, 391)
+        Me.Controls.Add(Me.SendIP)
         Me.Controls.Add(Me.chkShowMessages)
         Me.Controls.Add(Me.chkDontUpdateDatabase)
         Me.Controls.Add(Me.chkSMTPtest)
@@ -249,5 +265,6 @@
     Public WithEvents chkSMTPtest As System.Windows.Forms.CheckBox
     Public WithEvents chkDontUpdateDatabase As System.Windows.Forms.CheckBox
     Public WithEvents chkShowMessages As System.Windows.Forms.CheckBox
+    Public WithEvents SendIP As System.Windows.Forms.Button
 #End Region
 End Class

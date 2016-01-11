@@ -735,4 +735,156 @@ HTMLbody_Error:
         End If
     End Function
 
+    Private Sub SendIP_Click(sender As Object, e As EventArgs) Handles SendIP.Click
+        'created 1/11/2015 for special IP notice rules
+        Const strTitle As String = "Email Special IP"
+        Dim datCriteria As Date, datCalendar As Date
+        Dim strSQL As String
+        Dim strFolder As String, strFile As String
+        Dim SMTP As New SmtpClient
+        Dim strTo As String = "No one"
+        Dim intCounter As Short
+        Dim objStreamWriter As StreamWriter
+
+        If bDev Then
+            strFolder = "D:\temp"
+        Else
+            strFolder = "\\EPFile\Progs\EP Docket"
+        End If
+        strFolder = strFolder & "\ShowIP\"
+
+        Try
+            datCalendar = CDate(Me.txtCalendar.Text)
+            datCriteria = CDate(Me.txtNotice.Text)
+            ' 4 months in the future
+            datCriteria = DateAdd(DateInterval.Month, 4, datCriteria)
+        Catch ex As Exception
+            MsgBox("Invalid date entered on form.")
+        End Try
+
+        ' even if there are no items, an email will be sent to the strAdmin to that effect. So SMTP needs to be initialized
+        With SMTP
+            .UseDefaultCredentials = False
+            If Me.chkSMTPtest.Checked Then
+                .Host = "smtp.gmail.com"
+                .Credentials = New NetworkCredential("gordonprince4545@gmail.com", "badhomerenovation")
+                .EnableSsl = True
+                .Port = 587
+            Else
+                .Host = strHost
+                .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
+                .Port = 25
+            End If
+        End With
+
+        cnn = New ADODB.Connection
+        cnn.Open("Provider=MSDataShape.1;Persist Security Info=False;Data Source=" & strIPaddress & ";Integrated Security=SSPI;Initial Catalog=DocketControl;Data Provider=SQLOLEDB.1")
+        rst = New ADODB.Recordset
+        strSQL = "select * from IPmark " & _
+                 "WHERE (Suspended IS NOT NULL) AND (ApplicationAbandoned IS NULL) " & _
+                    "AND (LastEmailSuspended IS NULL OR LastEmailSuspended < '" & datCriteria & "')" & _
+                 " ORDER BY Suspended"
+        With rst
+            .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockOptimistic, ADODB.CommandTypeEnum.adCmdText)
+            Do Until .EOF
+                Using Email As New MailMessage
+                    With Email
+                        .From = New MailAddress(strDocketControlEmail)
+                        If Me.chkSMTPtest.CheckState = CheckState.Unchecked Then .Bcc.Add(New MailAddress(strDocketControlEmail))
+                        .IsBodyHtml = True
+                        If IsDBNull(rst.Fields("LastEmailSuspended").Value) Then
+                            .Subject = "Mark " & rst.Fields("MarkID").Value & " was"
+                        Else
+                            .Subject = "Four month reminder Mark " & rst.Fields("MarkID").Value
+                        End If
+                        .Subject = .Subject & " Suspended " & rst.Fields("Suspended").Value & _
+                                        " ResponsibleAtty: " & rst.Fields("ResponsibleAtty").Value
+                        strTo = rst.Fields("ResponsibleAtty").Value & "@evanspetree.com"
+                        .To.Add(New MailAddress(strTo))
+                    End With
+
+                    strFile = strFolder & "Mark" & CStr(rst.Fields("MarkID").Value) & ".bat"
+                    'Pass the file path and the file name to the StreamWriter constructor.
+                    objStreamWriter = New StreamWriter(strFile)
+                    'Write a line of text.
+                    If bDev Then
+                        strScratch = "start ""C:\Program Files (x86)\Microsoft Office\Office14\MSACCESS.EXE"" ""C:\Access\Access2010\DocketControl\EPdocket2010.adp"" /cmd " & CStr(rst.Fields("MarkID").Value)
+                    Else
+                        strScratch = "start ""C:\Program Files (x86)\Microsoft Office\Office14\MSACCESS.EXE"" ""C:\Tekhelps\EPdocket.ade"" /cmd " & CStr(rst.Fields("MarkID").Value)
+                    End If
+                    objStreamWriter.WriteLine(strScratch)
+                    'Close the file.
+                    objStreamWriter.Close()
+
+                    If Not IsDBNull(rst.Fields("Trademark").Value) Then strScratch = strScratch & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trademark: </font><strong>" & rst.Fields("Trademark").Value & "</strong><BR>"
+                    If Not IsDBNull(rst.Fields("SerialNo").Value) Then strScratch = strScratch & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial No: </font>" & rst.Fields("SerialNo").Value & "<BR>"
+                    If Not IsDBNull(rst.Fields("RegistrationNo").Value) Then strScratch = strScratch & strCourierOn & "RegistrationNo: </font>" & rst.Fields("RegistrationNo").Value & "<BR>"
+                    If Not IsDBNull(rst.Fields("Jurisdiction").Value) Then strScratch = strScratch & strCourierOn & "&nbsp;&nbsp;Jurisdiction: </font>" & rst.Fields("Jurisdiction").Value & "<BR>"
+                    If Not IsDBNull(rst.Fields("ApplicantName").Value) Then strScratch = strScratch & strCourierOn & "&nbsp;ApplicantName: </font>" & rst.Fields("ApplicantName").Value & "<BR>"
+                    If Not IsDBNull(rst.Fields("GoodsServices").Value) Then strScratch = strScratch & strCourierOn & "Goods/Services: </font>" & rst.Fields("GoodsServices").Value
+                    strScratch = strScratch & "<P>" & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mark ID: </font>" & CStr(rst.Fields("MarkID").Value) & _
+                                        " <a href=""file://" & strFile & """>Click here to open Mark in IP Dashboard.</a>"
+                    strHTML = strHTML & strScratch & "</P><P><font color=""blue"" size=""2""><I>The old format of this information is at the bottom of the page.</I></font><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>"
+                    rst.Close()
+
+                    If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
+                        Email.Body = strHTML & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
+                        SMTP.Send(Email)
+                    End If
+                End Using
+
+                If Me.chkDontUpdateDatabase.CheckState = CheckState.Checked Then
+                    .CancelUpdate()
+                Else
+                    ' update the database that the email was sent
+                    .Fields("LastEmailSuspended").Value = Now
+                    .Update()
+                End If
+                intCounter = intCounter + 1
+NextNotice:
+                If Me.chkShowMessages.CheckState Then
+                    strScratch = "Email(s) sent to: " & strTo & vbNewLine & _
+                                .Fields("Event").Value & vbNewLine & _
+                                .Fields("MatterID").Value & vbNewLine & _
+                                "DueDate = " & .Fields("DueDate").Value & vbNewLine & _
+                                "Trademark = " & rst.Fields("Trademark").Value & vbNewLine & vbNewLine & _
+                                "Process the next item?"
+                    If MsgBox(strScratch, MsgBoxStyle.YesNo + MsgBoxStyle.Question, strTitle) = MsgBoxResult.No Then GoTo FinishedLoop
+                End If
+                .MoveNext()
+            Loop
+FinishedLoop:
+            .Close()
+        End With
+        cnn.Close()
+
+        If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
+            ' notify the administrator what was done
+            Using Email As New MailMessage
+                With Email
+                    .IsBodyHtml = True
+                    .From = New MailAddress(strDocketControlEmail)
+                    .Subject = "Docket Control E-mail Summary"
+                    If Me.chkSMTPtest.CheckState = CheckState.Checked Then
+                        .To.Add(New MailAddress(strGordonPrince))
+                    Else
+                        .To.Add(New MailAddress(strAdminEmail))
+                        .To.Add(New MailAddress("bboone@evanspetree.com"))
+                        .Bcc.Add(New MailAddress(strDocketControlEmail))
+                    End If
+                    If Len(strDeadlines) > 0 Then
+                        .Body = "<P>" & strDeadlines & "</P>"
+                    Else
+                        .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font></P>"
+                    End If
+                    .Body = .Body & intCounter & " reminder E-mails were sent for items with Notice dates through " & datCriteria & "</P>"
+                End With
+                ' wait 2 seconds to make sure the summary email is the last one sent
+                System.Threading.Thread.Sleep(2000)
+                SMTP.Send(Email)
+            End Using
+        End If
+        If Me.chkShowMessages.CheckState Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
+        Exit Sub
+    End Sub
 End Class
