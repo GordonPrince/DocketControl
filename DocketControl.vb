@@ -757,7 +757,7 @@ HTMLbody_Error:
             datCalendar = CDate(Me.txtCalendar.Text)
             datCriteria = CDate(Me.txtNotice.Text)
             ' 4 months in the future
-            datCriteria = DateAdd(DateInterval.Month, 4, datCriteria)
+            datCriteria = DateAdd(DateInterval.Month, -4, datCriteria)
         Catch ex As Exception
             MsgBox("Invalid date entered on form.")
         End Try
@@ -798,11 +798,15 @@ HTMLbody_Error:
                             .Subject = "Four month reminder Mark " & rst.Fields("MarkID").Value
                         End If
                         .Subject = .Subject & " Suspended " & rst.Fields("Suspended").Value & _
-                                        " ResponsibleAtty: " & rst.Fields("ResponsibleAtty").Value
-                        strTo = rst.Fields("ResponsibleAtty").Value & "@evanspetree.com"
+                                   " ResponsibleAtty: " & rst.Fields("ResponsibleAtty").Value
+
+                        If Me.chkSMTPtest.CheckState = CheckState.Checked Then
+                            strTo = strGordonPrince
+                        Else
+                            strTo = rst.Fields("ResponsibleAtty").Value & "@evanspetree.com"
+                        End If
                         .To.Add(New MailAddress(strTo))
                     End With
-
                     strFile = strFolder & "Mark" & CStr(rst.Fields("MarkID").Value) & ".bat"
                     'Pass the file path and the file name to the StreamWriter constructor.
                     objStreamWriter = New StreamWriter(strFile)
@@ -816,6 +820,9 @@ HTMLbody_Error:
                     'Close the file.
                     objStreamWriter.Close()
 
+                    strHTML = "<HTML><BODY><P>This mark was Suspended " & rst.Fields("Suspended").Value & ".</P><P>" & _
+                              "You will be reminded of this every four months until the Suspended field is cleared or the mark's application is abandoned.</P>"
+                    strScratch = "<P>"
                     If Not IsDBNull(rst.Fields("Trademark").Value) Then strScratch = strScratch & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trademark: </font><strong>" & rst.Fields("Trademark").Value & "</strong><BR>"
                     If Not IsDBNull(rst.Fields("SerialNo").Value) Then strScratch = strScratch & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial No: </font>" & rst.Fields("SerialNo").Value & "<BR>"
                     If Not IsDBNull(rst.Fields("RegistrationNo").Value) Then strScratch = strScratch & strCourierOn & "RegistrationNo: </font>" & rst.Fields("RegistrationNo").Value & "<BR>"
@@ -824,13 +831,10 @@ HTMLbody_Error:
                     If Not IsDBNull(rst.Fields("GoodsServices").Value) Then strScratch = strScratch & strCourierOn & "Goods/Services: </font>" & rst.Fields("GoodsServices").Value
                     strScratch = strScratch & "<P>" & strCourierOn & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mark ID: </font>" & CStr(rst.Fields("MarkID").Value) & _
                                         " <a href=""file://" & strFile & """>Click here to open Mark in IP Dashboard.</a>"
-                    strHTML = strHTML & strScratch & "</P><P><font color=""blue"" size=""2""><I>The old format of this information is at the bottom of the page.</I></font><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>"
-                    rst.Close()
+                    strHTML = strHTML & strScratch & "</P></BODY></HTML>"
+                    Email.Body = strHTML
 
-                    If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
-                        Email.Body = strHTML & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
-                        SMTP.Send(Email)
-                    End If
+                    If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then SMTP.Send(Email)
                 End Using
 
                 If Me.chkDontUpdateDatabase.CheckState = CheckState.Checked Then
@@ -843,12 +847,7 @@ HTMLbody_Error:
                 intCounter = intCounter + 1
 NextNotice:
                 If Me.chkShowMessages.CheckState Then
-                    strScratch = "Email(s) sent to: " & strTo & vbNewLine & _
-                                .Fields("Event").Value & vbNewLine & _
-                                .Fields("MatterID").Value & vbNewLine & _
-                                "DueDate = " & .Fields("DueDate").Value & vbNewLine & _
-                                "Trademark = " & rst.Fields("Trademark").Value & vbNewLine & vbNewLine & _
-                                "Process the next item?"
+                    strScratch = "Email(s) sent to: " & strTo & vbNewLine & vbNewLine & "Process the next item?"
                     If MsgBox(strScratch, MsgBoxStyle.YesNo + MsgBoxStyle.Question, strTitle) = MsgBoxResult.No Then GoTo FinishedLoop
                 End If
                 .MoveNext()
@@ -858,32 +857,6 @@ FinishedLoop:
         End With
         cnn.Close()
 
-        If Me.chkDontSendMail.CheckState = CheckState.Unchecked Then
-            ' notify the administrator what was done
-            Using Email As New MailMessage
-                With Email
-                    .IsBodyHtml = True
-                    .From = New MailAddress(strDocketControlEmail)
-                    .Subject = "Docket Control E-mail Summary"
-                    If Me.chkSMTPtest.CheckState = CheckState.Checked Then
-                        .To.Add(New MailAddress(strGordonPrince))
-                    Else
-                        .To.Add(New MailAddress(strAdminEmail))
-                        .To.Add(New MailAddress("bboone@evanspetree.com"))
-                        .Bcc.Add(New MailAddress(strDocketControlEmail))
-                    End If
-                    If Len(strDeadlines) > 0 Then
-                        .Body = "<P>" & strDeadlines & "</P>"
-                    Else
-                        .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font></P>"
-                    End If
-                    .Body = .Body & intCounter & " reminder E-mails were sent for items with Notice dates through " & datCriteria & "</P>"
-                End With
-                ' wait 2 seconds to make sure the summary email is the last one sent
-                System.Threading.Thread.Sleep(2000)
-                SMTP.Send(Email)
-            End Using
-        End If
         If Me.chkShowMessages.CheckState Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         Exit Sub
     End Sub
