@@ -176,6 +176,9 @@ EmailTest_Error:
         With rst
             .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockOptimistic, ADODB.CommandTypeEnum.adCmdText)
             Do Until .EOF
+                'added 1/11/2015 for special IP notice rules
+                If SkipNotice(.Fields("MarkID").Value) Then GoTo NextNotice
+
                 Using Email As New MailMessage
                     strSubject = "Docket Control Item Due " & CStr(.Fields("DueDate").Value) & " (ID: " & CStr(.Fields("DocketID").Value) & ")"
                     If IsDBNull(.Fields("MarkID").Value) Then
@@ -272,6 +275,7 @@ EmailTest_Error:
                                        "Process the next item?"
                     If MsgBox(strScratch, MsgBoxStyle.YesNo + MsgBoxStyle.Question, strTitle) = MsgBoxResult.No Then GoTo FinishedLoop
                 End If
+NextNotice:
                 .MoveNext()
             Loop
 FinishedLoop:
@@ -328,7 +332,7 @@ EmailDueDate_Error:
         Dim rstMark As New ADODB.Recordset, rstNotify As New ADODB.Recordset
         Dim bMark As Boolean, strFolder As String, strFile As String
         Dim SMTP As New SmtpClient
-        Dim strTo1 As String, strTo As String
+        Dim strTo1 As String, strTo As String = "No one"
         Dim intCounter As Short
         Dim objStreamWriter As StreamWriter
 
@@ -376,6 +380,8 @@ EmailDueDate_Error:
         With rst
             .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockOptimistic, ADODB.CommandTypeEnum.adCmdText)
             Do Until .EOF
+                'added 1/11/2015 for special IP notice rules
+                If SkipNotice(.Fields("MarkID").Value) Then GoTo NextNotice
                 Using Email As New MailMessage
                     With Email
                         .From = New MailAddress(strDocketControlEmail)
@@ -533,15 +539,17 @@ HaveSubject:
                     End If
                     .Update()
                 End If
-
                 intCounter = intCounter + 1
-                strScratch = "Email(s) sent to: " & strTo & vbNewLine & _
-                                    .Fields("Event").Value & vbNewLine & _
-                                    .Fields("MatterID").Value & vbNewLine & _
-                                    "DueDate = " & .Fields("DueDate").Value & vbNewLine & _
-                                    "Trademark = " & rst.Fields("Trademark").Value & vbNewLine & vbNewLine & _
-                                    "Process the next item?"
-                If Me.chkShowMessages.CheckState Then If MsgBox(strScratch, MsgBoxStyle.YesNo + MsgBoxStyle.Question, strTitle) = MsgBoxResult.No Then GoTo FinishedLoop
+NextNotice:
+                If Me.chkShowMessages.CheckState Then
+                    strScratch = "Email(s) sent to: " & strTo & vbNewLine & _
+                                .Fields("Event").Value & vbNewLine & _
+                                .Fields("MatterID").Value & vbNewLine & _
+                                "DueDate = " & .Fields("DueDate").Value & vbNewLine & _
+                                "Trademark = " & rst.Fields("Trademark").Value & vbNewLine & vbNewLine & _
+                                "Process the next item?"
+                    If MsgBox(strScratch, MsgBoxStyle.YesNo + MsgBoxStyle.Question, strTitle) = MsgBoxResult.No Then GoTo FinishedLoop
+                End If
                 .MoveNext()
             Loop
 FinishedLoop:
@@ -584,6 +592,23 @@ FinishedLoop:
         If Me.chkShowMessages.CheckState Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         Exit Sub
     End Sub
+
+    Private Function SkipNotice(id As Long) As Boolean
+        'created 1/11/2015 for IP items
+        Dim strSQL As String = "SELECT NULL FROM IPmark " & _
+                                "WHERE Suspended IS NULL AND ApplicationAbandoned IS NULL AND MarkID = " & id
+        Dim rst As New ADODB.Recordset
+        With rst
+            .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
+            If .EOF Then
+                .Close()
+                Return True
+            Else
+                .Close()
+                Return False
+            End If
+        End With
+    End Function
 
     Private Function IsHoliday(ByVal datB As Date) As Boolean
         Dim rstH As ADODB.Recordset, strSQL As String
