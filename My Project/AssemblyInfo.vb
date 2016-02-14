@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Send DocketControl E-mail notfications")> 
 <Assembly: AssemblyCompany("Evans | Petree PC")> 
 <Assembly: AssemblyProduct("DocketControl E-mailer")> 
-<Assembly: AssemblyCopyright("Copyright © 1997-2015 Tekhelps, Inc")> 
+<Assembly: AssemblyCopyright("Copyright © 1997-2016 Tekhelps, Inc")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("15.12.3.*")> 
-<Assembly: AssemblyFileVersion("15.12.3.2")> 
+<Assembly: AssemblyVersion("16.2.14.*")> 
+'<Assembly: AssemblyFileVersion("15.12.3.2")> 

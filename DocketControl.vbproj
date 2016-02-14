@@ -21,7 +21,7 @@
     <ManifestCertificateThumbprint>FA03ED1A97C75447322BA005330024A42BFF0133</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
     <TargetZone>LocalIntranet</TargetZone>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
     <SignManifests>false</SignManifests>

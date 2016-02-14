@@ -30,46 +30,44 @@ Friend Class Form1
     Dim strDeadlines As String = vbNullString
 
     Private Sub Form1_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
-        On Error GoTo Form_Load_Error
+        Try
+            bDev = Environ("UserDomain").StartsWith("TEKHELPS")
+            With Me
+                If UCase(VB.Command()) = "/DONTSENDMAIL" Then
+                    .chkDontSendMail.CheckState = CheckState.Checked
+                    .chkSMTPtest.CheckState = CheckState.Checked
+                    .chkDontUpdateDatabase.CheckState = CheckState.Checked
+                    .chkShowMessages.CheckState = CheckState.Checked
+                ElseIf UCase(VB.Command()) = "/SHOWMESSAGES" Then
+                    .chkShowMessages.CheckState = CheckState.Checked
+                Else
+                    .chkShowMessages.Checked = bDev
+                    .chkSMTPtest.Checked = bDev
+                    .chkDontUpdateDatabase.Checked = bDev
+                End If
+                .txtCalendar.Text = CStr(Today)
+                cmdSetDates_Click(cmdSetDates, New System.EventArgs())
 
-        bDev = Environ("UserDomain").StartsWith("TEKHELPS")
-        With Me
-            If UCase(VB.Command()) = "/DONTSENDMAIL" Then
-                .chkDontSendMail.CheckState = CheckState.Checked
-                .chkSMTPtest.CheckState = CheckState.Checked
-                .chkDontUpdateDatabase.CheckState = CheckState.Checked
-                .chkShowMessages.CheckState = CheckState.Checked
-            ElseIf UCase(VB.Command()) = "/SHOWMESSAGES" Then
-                .chkShowMessages.CheckState = CheckState.Checked
-            Else
-                .chkShowMessages.Checked = bDev
-                .chkSMTPtest.Checked = bDev
-                .chkDontUpdateDatabase.Checked = bDev
-            End If
-            .txtCalendar.Text = CStr(Today)
-            cmdSetDates_Click(cmdSetDates, New System.EventArgs())
-
-            If .chkShowMessages.Checked Then
-            Else
-                ' automatically send both sets of emails
-                cmdDueDate_Click(cmdDueDate, New System.EventArgs())
-                cmdEmailNotices_Click(cmdEmailNotices, New System.EventArgs())
-                .Close()
-            End If
-        End With
-        Exit Sub
-
-Form_Load_Error:
-        If Me.chkShowMessages.CheckState Then MsgBox(Err.Description, MsgBoxStyle.Exclamation, "Form_Load")
+                If .chkShowMessages.Checked Then
+                Else
+                    ' automatically send both sets of emails
+                    cmdDueDate_Click(cmdDueDate, New System.EventArgs())
+                    cmdEmailNotices_Click(cmdEmailNotices, New System.EventArgs())
+                    .Close()
+                End If
+            End With
+        Catch ex As Exception
+            If Me.chkShowMessages.CheckState Then MsgBox(Err.Description, MsgBoxStyle.Exclamation, "Form_Load")
+        End Try
     End Sub
 
     Private Sub cmdEmailTest_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdEmailTest.Click
-        On Error GoTo EmailTest_Error
-        Dim Email As New MailMessage, SMTP As New SmtpClient
+        Me.Cursor = Cursors.WaitCursor
+        Dim Email As New MailMessage
         Dim strTo As String
-
         ' Build HTML for message body.
-        strHTML = "<HTML><BODY><P>" & "This is the test HTML message body from the DocketControl Emailer.exe.</P>" & "<P>Please discard it.</P></BODY></HTML>"
+        strHTML = "<HTML><BODY><P>" & "This is the test HTML message body from the DocketControl Emailer.exe.</P>" & _
+                  "<P>Please discard it.</P></BODY></HTML>"
 
         ' Apply the settings to the message.
         With Email
@@ -82,35 +80,32 @@ Form_Load_Error:
                 strTo = "gprince@evanspetree.com"
             End If
             .To.Add(New MailAddress(strTo))
-            .Subject = "Docket Control 2008 test message"
+            .Subject = "Docket Control 2016 test message"
             .IsBodyHtml = True
             .Body = strHTML
         End With
-        With SMTP
-            .UseDefaultCredentials = False
-            If Me.chkSMTPtest.Checked Then
-                .Host = "smtp.gmail.com"
-                .Credentials = New NetworkCredential("gordonprince4545@gmail.com", "badhomerenovation")
-                .EnableSsl = True
-                .Port = 587
-            Else
-                .Host = strHost
-                .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
-                .Port = 25
-            End If
-            .Send(Email)
-        End With
-
-        MsgBox("Mail sent to " & strTo & " via " & SMTP.Host, MsgBoxStyle.Information, "cmdEmailTest")
-        Email.Dispose()
-        Email = Nothing
-
-        SMTP = Nothing
-        Exit Sub
-
-EmailTest_Error:
-        If Me.chkShowMessages.CheckState Then MsgBox(Err.Description, MsgBoxStyle.Exclamation, strTitle)
-
+        Dim SMTP As New SmtpClient
+        Try
+            With SMTP
+                .UseDefaultCredentials = False
+                If Me.chkSMTPtest.Checked Then
+                    .Host = "smtp.gmail.com"
+                    .Credentials = New NetworkCredential("gordonprince4545@gmail.com", "badhomerenovation")
+                    .EnableSsl = True
+                    .Port = 587
+                Else
+                    .Host = strHost
+                    .Credentials = New NetworkCredential("DocketControl@EvansPetree.com", "friday15")
+                    .Port = 25
+                End If
+                .Send(Email)
+            End With
+            MsgBox("Mail sent to " & strTo & " via " & SMTP.Host, MsgBoxStyle.Information, "cmdEmailTest")
+        Catch ex As Exception
+            If Me.chkShowMessages.CheckState Then MsgBox(Err.Description, MsgBoxStyle.Exclamation, strTitle)
+        Finally
+            Me.Cursor = Cursors.Default
+        End Try
     End Sub
 
     Private Sub cmdSetDates_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdSetDates.Click
