@@ -33,6 +33,7 @@ Friend Class Form1
         Try
             bDev = Environ("UserDomain").StartsWith("TEKHELPS")
             With Me
+                .Text = .Text & " -- " & Application.ProductVersion
                 If UCase(VB.Command()) = "/DONTSENDMAIL" Then
                     .chkDontSendMail.CheckState = CheckState.Checked
                     .chkSMTPtest.CheckState = CheckState.Checked
@@ -574,7 +575,7 @@ FinishedLoop:
     End Sub
 
     Private Function SkipNotice(id As Long) As Boolean
-        'created 1/11/2015 for IP items
+        'created 1/11/2016 for IP items, deployed finally 2/14/2016
         Dim strSQL As String = "SELECT NULL FROM IPmark " & _
                                 "WHERE Suspended IS NULL AND ApplicationAbandoned IS NULL AND MarkID = " & id
         Dim rst As New ADODB.Recordset
@@ -764,6 +765,7 @@ HTMLbody_Error:
                  "WHERE (Suspended IS NOT NULL) AND (ApplicationAbandoned IS NULL) " & _
                     "AND (LastEmailSuspended IS NULL OR LastEmailSuspended < '" & datCriteria & "')" & _
                  " ORDER BY Suspended"
+        Debug.Print(strSQL)
         With rst
             .Open(strSQL, cnn, ADODB.CursorTypeEnum.adOpenDynamic, ADODB.LockTypeEnum.adLockOptimistic, ADODB.CommandTypeEnum.adCmdText)
             Do Until .EOF
