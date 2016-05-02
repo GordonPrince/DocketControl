@@ -553,8 +553,7 @@ FinishedLoop:
                     If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                         .To.Add(New MailAddress(strGordonPrince))
                     Else
-                        .To.Add(New MailAddress(strAdminEmail))
-                        .To.Add(New MailAddress("bboone@evanspetree.com"))
+                        .To.Add(New MailAddress("DocketSummary@evanspetree.com"))
                         .Bcc.Add(New MailAddress(strDocketControlEmail))
                     End If
                     If Len(strDeadlines) > 0 Then
