@@ -204,7 +204,7 @@ Friend Class Form1
                         With rstNotify
                             If .EOF Then
                                 strHTML = "<HTML><BODY><font color=""red""<P>" & _
-                                                  "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
+                                        "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
                                 If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                                     strTo = strGordonPrince
                                 Else
@@ -231,6 +231,7 @@ Friend Class Form1
                             .Close()
                         End With
                     Else
+                        strHTML = "<HTML><BODY>"
                         strTo = strDocketIPEmail
                         If Me.chkSMTPtest.CheckState = CheckState.Checked Then
                             Email.To.Add(New MailAddress(strGordonPrince))
@@ -244,6 +245,7 @@ Friend Class Form1
                     ' 1/16/2013 added this
                     If .Fields("Completed").Value <> 0 Then
                         strHTML = strHTML & "<font color=""red""><strong>This item was " & .Fields("CompletedBy").Value & "</strong></font></P><P>"
+                        Debug.Print(strHTML)
                     End If
 
                     If Me.chkSMTPtest.CheckState = CheckState.Unchecked Then Email.To.Add(New MailAddress(strAdminEmail))
