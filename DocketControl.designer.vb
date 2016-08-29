@@ -202,7 +202,7 @@
         Me.Label1.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Label1.Size = New System.Drawing.Size(181, 21)
         Me.Label1.TabIndex = 11
-        Me.Label1.Text = "2016-May-5  5:40"
+        Me.Label1.Text = "2016-Aug-29  11:30"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'chkShowMessages

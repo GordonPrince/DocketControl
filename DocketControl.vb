@@ -522,7 +522,6 @@ HaveSubject:
                     .Update()
                 End If
                 intCounter = intCounter + 1
-NextNotice:
                 If Me.chkShowMessages.CheckState Then
                     strScratch = "Email(s) sent to: " & strTo & vbNewLine & _
                                 .Fields("Event").Value & vbNewLine & _
@@ -532,6 +531,7 @@ NextNotice:
                                 "Process the next item?"
                     If MsgBox(strScratch, MsgBoxStyle.YesNo + MsgBoxStyle.Question, strTitle) = MsgBoxResult.No Then GoTo FinishedLoop
                 End If
+NextNotice:
                 .MoveNext()
             Loop
 FinishedLoop:
@@ -567,7 +567,7 @@ FinishedLoop:
                             " sent for items with Notice dates through " & datCriteria & ".</P>"
                 End With
                 ' wait 2 seconds to make sure the summary email is the last one sent
-                System.Threading.Thread.Sleep(2000)
+                System.Threading.Thread.Sleep(1000)
                 SMTP.Send(Email)
             End Using
         End If
