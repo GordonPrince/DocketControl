@@ -321,7 +321,7 @@ EmailDueDate_Error:
         If bDev Then
             strFolder = "D:\temp"
         Else
-            strFolder = "\\EPFile\Progs\EP Docket"
+            strFolder = "\\EPFile16\Progs\EP Docket"
         End If
         strFolder = strFolder & "\ShowIP\"
 
