@@ -34,7 +34,7 @@
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.txtNotice = New System.Windows.Forms.TextBox()
         Me.cmdEmailTest = New System.Windows.Forms.Button()
-        Me.chkSMTPtest = New System.Windows.Forms.CheckBox()
+        Me.chkUseGmail = New System.Windows.Forms.CheckBox()
         Me.chkDontSendMail = New System.Windows.Forms.CheckBox()
         Me.chkDontUpdateDatabase = New System.Windows.Forms.CheckBox()
         Me.cmdSetDates = New System.Windows.Forms.Button()
@@ -45,6 +45,8 @@
         Me.Label1 = New System.Windows.Forms.Label()
         Me.chkShowMessages = New System.Windows.Forms.CheckBox()
         Me.SendIP = New System.Windows.Forms.Button()
+        Me.cmdBothQuit = New System.Windows.Forms.Button()
+        Me.txtStatus = New System.Windows.Forms.TextBox()
         Me.SuspendLayout()
         '
         'txtNotice
@@ -77,20 +79,20 @@
         Me.ToolTip1.SetToolTip(Me.cmdEmailTest, "Send an email to the test user.")
         Me.cmdEmailTest.UseVisualStyleBackColor = False
         '
-        'chkSMTPtest
+        'chkUseGmail
         '
-        Me.chkSMTPtest.BackColor = System.Drawing.SystemColors.Control
-        Me.chkSMTPtest.Cursor = System.Windows.Forms.Cursors.Default
-        Me.chkSMTPtest.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkSMTPtest.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.chkSMTPtest.Location = New System.Drawing.Point(270, 258)
-        Me.chkSMTPtest.Name = "chkSMTPtest"
-        Me.chkSMTPtest.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.chkSMTPtest.Size = New System.Drawing.Size(213, 21)
-        Me.chkSMTPtest.TabIndex = 8
-        Me.chkSMTPtest.Text = "SMTP Test (use GMail)"
-        Me.ToolTip1.SetToolTip(Me.chkSMTPtest, "Send all e-mails via Gordon's GMail SMTP server.")
-        Me.chkSMTPtest.UseVisualStyleBackColor = False
+        Me.chkUseGmail.BackColor = System.Drawing.SystemColors.Control
+        Me.chkUseGmail.Cursor = System.Windows.Forms.Cursors.Default
+        Me.chkUseGmail.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkUseGmail.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.chkUseGmail.Location = New System.Drawing.Point(270, 258)
+        Me.chkUseGmail.Name = "chkUseGmail"
+        Me.chkUseGmail.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.chkUseGmail.Size = New System.Drawing.Size(213, 21)
+        Me.chkUseGmail.TabIndex = 8
+        Me.chkUseGmail.Text = "Use Gmail to send E-mails"
+        Me.ToolTip1.SetToolTip(Me.chkUseGmail, "Send all e-mails via ridgeway17gordon@gmail.com.")
+        Me.chkUseGmail.UseVisualStyleBackColor = False
         '
         'chkDontSendMail
         '
@@ -103,8 +105,8 @@
         Me.chkDontSendMail.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.chkDontSendMail.Size = New System.Drawing.Size(213, 21)
         Me.chkDontSendMail.TabIndex = 7
-        Me.chkDontSendMail.Text = "Don't Send Emails"
-        Me.ToolTip1.SetToolTip(Me.chkDontSendMail, "Don't send emails.")
+        Me.chkDontSendMail.Text = "Don't Send E-mails"
+        Me.ToolTip1.SetToolTip(Me.chkDontSendMail, "Don't send E-mails.")
         Me.chkDontSendMail.UseVisualStyleBackColor = False
         '
         'chkDontUpdateDatabase
@@ -183,7 +185,7 @@
         Me.cmdEmailNotices.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdEmailNotices.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdEmailNotices.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdEmailNotices.Location = New System.Drawing.Point(40, 170)
+        Me.cmdEmailNotices.Location = New System.Drawing.Point(40, 147)
         Me.cmdEmailNotices.Name = "cmdEmailNotices"
         Me.cmdEmailNotices.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdEmailNotices.Size = New System.Drawing.Size(181, 41)
@@ -197,12 +199,12 @@
         Me.Label1.Cursor = System.Windows.Forms.Cursors.Default
         Me.Label1.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.Label1.Location = New System.Drawing.Point(330, 361)
+        Me.Label1.Location = New System.Drawing.Point(364, 361)
         Me.Label1.Name = "Label1"
         Me.Label1.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.Label1.Size = New System.Drawing.Size(181, 21)
+        Me.Label1.Size = New System.Drawing.Size(147, 21)
         Me.Label1.TabIndex = 11
-        Me.Label1.Text = "2016-Sep-13  12:20"
+        Me.Label1.Text = "2022-July-19  17:30"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'chkShowMessages
@@ -225,7 +227,7 @@
         Me.SendIP.Cursor = System.Windows.Forms.Cursors.Default
         Me.SendIP.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.SendIP.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.SendIP.Location = New System.Drawing.Point(40, 238)
+        Me.SendIP.Location = New System.Drawing.Point(40, 292)
         Me.SendIP.Name = "SendIP"
         Me.SendIP.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.SendIP.Size = New System.Drawing.Size(181, 41)
@@ -233,16 +235,46 @@
         Me.SendIP.Text = "Send IP Emails"
         Me.SendIP.UseVisualStyleBackColor = False
         '
+        'cmdBothQuit
+        '
+        Me.cmdBothQuit.BackColor = System.Drawing.SystemColors.Control
+        Me.cmdBothQuit.Cursor = System.Windows.Forms.Cursors.Default
+        Me.cmdBothQuit.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdBothQuit.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.cmdBothQuit.Location = New System.Drawing.Point(40, 194)
+        Me.cmdBothQuit.Name = "cmdBothQuit"
+        Me.cmdBothQuit.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.cmdBothQuit.Size = New System.Drawing.Size(181, 64)
+        Me.cmdBothQuit.TabIndex = 14
+        Me.cmdBothQuit.Text = "Send DueDate + " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Notice Emails + Quit"
+        Me.cmdBothQuit.UseVisualStyleBackColor = False
+        '
+        'txtStatus
+        '
+        Me.txtStatus.AcceptsReturn = True
+        Me.txtStatus.BackColor = System.Drawing.SystemColors.Window
+        Me.txtStatus.Cursor = System.Windows.Forms.Cursors.IBeam
+        Me.txtStatus.Font = New System.Drawing.Font("Tahoma", 9.6!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtStatus.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.txtStatus.Location = New System.Drawing.Point(40, 352)
+        Me.txtStatus.MaxLength = 0
+        Me.txtStatus.Name = "txtStatus"
+        Me.txtStatus.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.txtStatus.Size = New System.Drawing.Size(181, 27)
+        Me.txtStatus.TabIndex = 15
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(550, 391)
+        Me.Controls.Add(Me.txtStatus)
+        Me.Controls.Add(Me.cmdBothQuit)
         Me.Controls.Add(Me.SendIP)
         Me.Controls.Add(Me.chkShowMessages)
         Me.Controls.Add(Me.chkDontUpdateDatabase)
-        Me.Controls.Add(Me.chkSMTPtest)
+        Me.Controls.Add(Me.chkUseGmail)
         Me.Controls.Add(Me.chkDontSendMail)
         Me.Controls.Add(Me.cmdSetDates)
         Me.Controls.Add(Me.txtDueDate)
@@ -257,14 +289,16 @@
         Me.Location = New System.Drawing.Point(4, 29)
         Me.Name = "Form1"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.Text = "Docket Control Email"
+        Me.Text = "Docket Control E-mail"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Public WithEvents chkSMTPtest As System.Windows.Forms.CheckBox
+    Public WithEvents chkUseGmail As System.Windows.Forms.CheckBox
     Public WithEvents chkDontUpdateDatabase As System.Windows.Forms.CheckBox
     Public WithEvents chkShowMessages As System.Windows.Forms.CheckBox
     Public WithEvents SendIP As System.Windows.Forms.Button
+    Public WithEvents cmdBothQuit As Button
+    Public WithEvents txtStatus As TextBox
 #End Region
 End Class

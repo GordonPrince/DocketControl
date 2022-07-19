@@ -11,14 +11,14 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyTitle("DocketControl")> 
 <Assembly: AssemblyDescription("Send DocketControl E-mail notfications")> 
 <Assembly: AssemblyCompany("Evans | Petree PC")> 
-<Assembly: AssemblyProduct("DocketControl E-mailer")> 
-<Assembly: AssemblyCopyright("Copyright © 1997-2016 Tekhelps, Inc")> 
+<Assembly: AssemblyProduct("DocketControl E-mailer")>
+<Assembly: AssemblyCopyright("Copyright © 1997-2022 Gordon Prince Company")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("be53971e-16fd-4cfa-a854-a682ce3c8f21")> 
+<Assembly: Guid("be53971e-16fd-4cfa-a854-a682ce3c8f21")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("16.5.5.*")> 
+<Assembly: AssemblyVersion("22.7.19.6")>
 '<Assembly: AssemblyFileVersion("15.12.3.2")> 
