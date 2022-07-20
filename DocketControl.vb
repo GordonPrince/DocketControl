@@ -21,7 +21,7 @@ Friend Class Form1
     '12/3/2015 changed from "EPExchange"
     '2/21/2018 Const strHost As String = "EXCH2013" 
     Const strHost As String = "smtp.office365.com"
-    Dim bDev As Boolean
+    Dim isDev As Boolean
     Dim strHTML As String
     Dim strScratch As String
     Dim cnn As New ADODB.Connection(), strConnection As String
@@ -32,27 +32,20 @@ Friend Class Form1
     Private Sub Form1_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         Try
             If Environ("UserDomain").StartsWith("TEKHELPS") Then
-                bDev = True
+                isDev = True
                 dbServer = "Tekhelps17\SQL2016"
-                'chkDontSendMail.Checked = True
-                'chkDontUpdateDatabase.Checked = True
-                chkShowMessages.Checked = True
-                chkUseGmail.Checked = True
             End If
             strConnection = "Provider=MSDataShape.1;Persist Security Info=False;Data Source=" & dbServer & ";Integrated Security=SSPI;Initial Catalog=DocketControl;Data Provider=SQLOLEDB.1"
             With Me
                 .Text = .Text & " -- " & Application.ProductVersion
-                If UCase(VB.Command()) = "/DONTSENDMAIL" Then
-                    .chkDontSendMail.CheckState = CheckState.Checked
-                    .chkUseGmail.CheckState = CheckState.Checked
-                    .chkDontUpdateDatabase.CheckState = CheckState.Checked
-                    .chkShowMessages.CheckState = CheckState.Checked
+                If isDev Then
+                    .chkDontSendMail.Checked = True
+                    .chkDontUpdateDatabase.Checked = True
+                    .chkShowMessages.Checked = True
+                ElseIf UCase(VB.Command()) = "/DONTSENDMAIL" Then
+                    .chkDontSendMail.Checked = True
                 ElseIf UCase(VB.Command()) = "/SHOWMESSAGES" Then
-                    .chkShowMessages.CheckState = CheckState.Checked
-                Else
-                    .chkShowMessages.Checked = bDev
-                    .chkUseGmail.Checked = True '3/11/2022 changed this bDev
-                    .chkDontUpdateDatabase.Checked = bDev
+                    .chkShowMessages.Checked = True
                 End If
                 .txtCalendar.Text = CStr(Today)
                 cmdSetDates_Click(cmdSetDates, New System.EventArgs())
@@ -334,7 +327,7 @@ FinishedLoop:
             MsgBox(ex.Message, vbExclamation, strTitle)
         Finally
             rstNotify = Nothing
-            If rst.Status <> 0 Then rst.Close()
+            If rst.State <> 0 Then rst.Close()
             rst = Nothing
             cnn.Close()
         End Try
@@ -351,7 +344,7 @@ FinishedLoop:
         Dim intCounter As Short
         Dim objStreamWriter As StreamWriter
 
-        If bDev Then
+        If isDev Then
             strFolder = "C:\tmp"
         Else
             strFolder = "\\EPFile16\Progs\EP Docket"
@@ -511,7 +504,7 @@ HaveSubject:
                             'Pass the file path and the file name to the StreamWriter constructor.
                             objStreamWriter = New StreamWriter(strFile)
                             'Write a line of text.
-                            If bDev Then
+                            If isDev Then
                                 strScratch = "start ""C:\Program Files (x86)\Microsoft Office\Office14\MSACCESS.EXE"" ""C:\Access\Access2010\DocketControl\EPdocket2010.adp"" /cmd " & CStr(rstMark.Fields("MarkID").Value)
                             Else
                                 strScratch = "start ""C:\Program Files (x86)\Microsoft Office\Office14\MSACCESS.EXE"" ""C:\Tekhelps\EPdocket.ade"" /cmd " & CStr(rstMark.Fields("MarkID").Value)
@@ -624,7 +617,7 @@ FinishedLoop:
         Catch ex As Exception
             MsgBox("Invalid date entered on form.")
         Finally
-            If rst.Status <> 0 Then rst.Close()
+            If rst.State <> 0 Then rst.Close()
             rst = Nothing
             rstNotify = Nothing
             cnn.Close()
@@ -783,7 +776,7 @@ CheckIfHoliday:
     '        Dim intCounter As Short
     '        Dim objStreamWriter As StreamWriter
 
-    '        If bDev Then
+    '        If isDev Then
     '            strFolder = "D:\temp"
     '        Else
     '            strFolder = "\\EPFile16\PROGS\EP Docket"
@@ -855,7 +848,7 @@ CheckIfHoliday:
     '                    'Pass the file path and the file name to the StreamWriter constructor.
     '                    objStreamWriter = New StreamWriter(strFile)
     '                    'Write a line of text.
-    '                    If bDev Then
+    '                    If isDev Then
     '                        strScratch = "start ""C:\Program Files (x86)\Microsoft Office\Office14\MSACCESS.EXE"" ""C:\Access\Access2010\DocketControl\EPdocket2010.adp"" /cmd " & CStr(rst.Fields("MarkID").Value)
     '                    Else
     '                        strScratch = "start ""C:\Program Files (x86)\Microsoft Office\Office14\MSACCESS.EXE"" ""C:\Tekhelps\EPdocket.ade"" /cmd " & CStr(rst.Fields("MarkID").Value)
@@ -908,7 +901,7 @@ CheckIfHoliday:
     '                       IIf(intCounter = 1, "One reminder E-mail was", intCounter & " reminder E-mails were") & _
     '                       " sent for " & IIf(intCounter = 1, "a Suspended IP mark", "Suspended IP marks") & ".</P>"
 
-    '        If chkShowMessages.CheckState Or bDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
+    '        If chkShowMessages.CheckState Or isDev Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
     '        Exit Sub
     '    End Sub
 

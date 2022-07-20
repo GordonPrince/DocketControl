@@ -56,7 +56,7 @@
         Me.txtNotice.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtNotice.Font = New System.Drawing.Font("Tahoma", 9.6!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtNotice.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtNotice.Location = New System.Drawing.Point(270, 180)
+        Me.txtNotice.Location = New System.Drawing.Point(270, 153)
         Me.txtNotice.MaxLength = 0
         Me.txtNotice.Name = "txtNotice"
         Me.txtNotice.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -144,7 +144,7 @@
         Me.txtDueDate.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtDueDate.Font = New System.Drawing.Font("Tahoma", 9.6!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtDueDate.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtDueDate.Location = New System.Drawing.Point(270, 110)
+        Me.txtDueDate.Location = New System.Drawing.Point(270, 106)
         Me.txtDueDate.MaxLength = 0
         Me.txtDueDate.Name = "txtDueDate"
         Me.txtDueDate.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -158,7 +158,7 @@
         Me.txtCalendar.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtCalendar.Font = New System.Drawing.Font("Tahoma", 9.6!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtCalendar.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtCalendar.Location = New System.Drawing.Point(270, 40)
+        Me.txtCalendar.Location = New System.Drawing.Point(270, 36)
         Me.txtCalendar.MaxLength = 0
         Me.txtCalendar.Name = "txtCalendar"
         Me.txtCalendar.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -204,7 +204,7 @@
         Me.Label1.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Label1.Size = New System.Drawing.Size(147, 21)
         Me.Label1.TabIndex = 11
-        Me.Label1.Text = "2022-July-19  17:30"
+        Me.Label1.Text = "2022-July-20  8:55"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'chkShowMessages
