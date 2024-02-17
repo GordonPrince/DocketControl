@@ -34,8 +34,8 @@
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.txtNotice = New System.Windows.Forms.TextBox()
         Me.cmdEmailTest = New System.Windows.Forms.Button()
-        Me.chkUseGmail = New System.Windows.Forms.CheckBox()
         Me.chkDontSendMail = New System.Windows.Forms.CheckBox()
+        Me.chkSendToGordon = New System.Windows.Forms.CheckBox()
         Me.chkDontUpdateDatabase = New System.Windows.Forms.CheckBox()
         Me.cmdSetDates = New System.Windows.Forms.Button()
         Me.txtDueDate = New System.Windows.Forms.TextBox()
@@ -79,21 +79,6 @@
         Me.ToolTip1.SetToolTip(Me.cmdEmailTest, "Send an email to the test user.")
         Me.cmdEmailTest.UseVisualStyleBackColor = False
         '
-        'chkUseGmail
-        '
-        Me.chkUseGmail.BackColor = System.Drawing.SystemColors.Control
-        Me.chkUseGmail.Cursor = System.Windows.Forms.Cursors.Default
-        Me.chkUseGmail.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkUseGmail.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.chkUseGmail.Location = New System.Drawing.Point(270, 258)
-        Me.chkUseGmail.Name = "chkUseGmail"
-        Me.chkUseGmail.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.chkUseGmail.Size = New System.Drawing.Size(213, 21)
-        Me.chkUseGmail.TabIndex = 8
-        Me.chkUseGmail.Text = "Use Gmail to send E-mails"
-        Me.ToolTip1.SetToolTip(Me.chkUseGmail, "Send all e-mails via ridgeway17gordon@gmail.com.")
-        Me.chkUseGmail.UseVisualStyleBackColor = False
-        '
         'chkDontSendMail
         '
         Me.chkDontSendMail.BackColor = System.Drawing.SystemColors.Control
@@ -108,6 +93,21 @@
         Me.chkDontSendMail.Text = "Don't Send E-mails"
         Me.ToolTip1.SetToolTip(Me.chkDontSendMail, "Don't send E-mails.")
         Me.chkDontSendMail.UseVisualStyleBackColor = False
+        '
+        'chkSendToGordon
+        '
+        Me.chkSendToGordon.BackColor = System.Drawing.SystemColors.Control
+        Me.chkSendToGordon.Cursor = System.Windows.Forms.Cursors.Default
+        Me.chkSendToGordon.Font = New System.Drawing.Font("Tahoma", 7.8!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkSendToGordon.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.chkSendToGordon.Location = New System.Drawing.Point(270, 258)
+        Me.chkSendToGordon.Name = "chkSendToGordon"
+        Me.chkSendToGordon.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.chkSendToGordon.Size = New System.Drawing.Size(213, 21)
+        Me.chkSendToGordon.TabIndex = 16
+        Me.chkSendToGordon.Text = "Send E-mails to Gordon"
+        Me.ToolTip1.SetToolTip(Me.chkSendToGordon, "Don't send E-mails.")
+        Me.chkSendToGordon.UseVisualStyleBackColor = False
         '
         'chkDontUpdateDatabase
         '
@@ -204,7 +204,7 @@
         Me.Label1.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Label1.Size = New System.Drawing.Size(147, 21)
         Me.Label1.TabIndex = 11
-        Me.Label1.Text = "2022-July-20  8:55"
+        Me.Label1.Text = "2024-Feb-17 10:30"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'chkShowMessages
@@ -269,12 +269,12 @@
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(550, 391)
+        Me.Controls.Add(Me.chkSendToGordon)
         Me.Controls.Add(Me.txtStatus)
         Me.Controls.Add(Me.cmdBothQuit)
         Me.Controls.Add(Me.SendIP)
         Me.Controls.Add(Me.chkShowMessages)
         Me.Controls.Add(Me.chkDontUpdateDatabase)
-        Me.Controls.Add(Me.chkUseGmail)
         Me.Controls.Add(Me.chkDontSendMail)
         Me.Controls.Add(Me.cmdSetDates)
         Me.Controls.Add(Me.txtDueDate)
@@ -294,11 +294,11 @@
         Me.PerformLayout()
 
     End Sub
-    Public WithEvents chkUseGmail As System.Windows.Forms.CheckBox
     Public WithEvents chkDontUpdateDatabase As System.Windows.Forms.CheckBox
     Public WithEvents chkShowMessages As System.Windows.Forms.CheckBox
     Public WithEvents SendIP As System.Windows.Forms.Button
     Public WithEvents cmdBothQuit As Button
     Public WithEvents txtStatus As TextBox
+    Public WithEvents chkSendToGordon As CheckBox
 #End Region
 End Class

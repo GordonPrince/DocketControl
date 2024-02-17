@@ -9,7 +9,7 @@ Friend Class Form1
     Inherits System.Windows.Forms.Form
 
     Const strCourierOn As String = "<font face=""Courier New"" color=""blue"">"
-    Const strInfo As String = "For further information about this notice<BR>" & "contact Melanie Simmonds or Linda Smith or<BR>" & _
+    Const strInfo As String = "For further information about this notice<BR>" & "contact Melanie Simmonds or<BR>" &
                                 "Gordon Prince * gordon@tekhelps.com * (901) 761-3393."
 
     ' these are used for sending emails
@@ -33,13 +33,13 @@ Friend Class Form1
         Try
             If Environ("UserDomain").StartsWith("TEKHELPS") Then
                 isDev = True
-                dbServer = "Tekhelps17\SQL2016"
+                dbServer = "Tekhelps17\SQL2016B"
             End If
             strConnection = "Provider=MSDataShape.1;Persist Security Info=False;Data Source=" & dbServer & ";Integrated Security=SSPI;Initial Catalog=DocketControl;Data Provider=SQLOLEDB.1"
             With Me
                 .Text = .Text & " -- " & Application.ProductVersion
                 If isDev Then
-                    .chkDontSendMail.Checked = True
+                    .chkSendToGordon.Checked = True
                     .chkDontUpdateDatabase.Checked = True
                     .chkShowMessages.Checked = True
                 ElseIf UCase(VB.Command()) = "/DONTSENDMAIL" Then
@@ -76,12 +76,7 @@ Friend Class Form1
             Try
                 ' Apply the settings to the message.
                 With Email
-                    If chkUseGmail.Checked Then
-                        .From = New MailAddress("ridgeway17gordon@gmail.com", "Docket Control 25")
-                        .Bcc.Add(New MailAddress(strDocketControlEmail))
-                    Else
-                        .From = New MailAddress(strDocketControlEmail, "DocketControl")
-                    End If
+                    .From = New MailAddress(strDocketControlEmail, "DocketControl")
 
                     strTo = InputBox("Send test email to:", cmdEmailTest.Text, strTo)
                     If Not strTo.Contains("@") Then Exit Sub
@@ -112,18 +107,18 @@ Friend Class Form1
             With client
                 .UseDefaultCredentials = False
                 .EnableSsl = True
-                If chkUseGmail.Checked Then
-                    .Host = "smtp.gmail.com"
-                    .Credentials = New NetworkCredential("ridgeway17gordon@gmail.com", "OJLyWoqqP##UWJH")
-                    .Port = 587
-                Else
-                    .Host = strHost
+                'If chkUseGmail.Checked Then
+                '    .Host = "smtp.gmail.com"
+                '    .Credentials = New NetworkCredential("ridgeway17gordon@gmail.com", "OJLyWoqqP##UWJH")
+                '    .Port = 587
+                'Else
+                .Host = strHost
                     .Port = 587
                     .Credentials = New NetworkCredential(strDocketControlEmail, "friday15")
                     .DeliveryMethod = SmtpDeliveryMethod.Network '7/19/2022 added this
-                    '.Credentials = CredentialCache.DefaultNetworkCredentials
-                    '.UseDefaultCredentials = True
-                End If
+                '.Credentials = CredentialCache.DefaultNetworkCredentials
+                '.UseDefaultCredentials = True
+                'End If
             End With
 
 SendEmail:
@@ -185,6 +180,7 @@ SendEmail:
             MsgBox("Invalid DueDate.", vbExclamation + vbOKOnly, strTitle)
             Exit Sub
         End If
+
         Try
             cnn.Open(strConnection)
             rst = New ADODB.Recordset
@@ -219,60 +215,48 @@ SendEmail:
                         Email.Subject = strSubject
 
                         With Email
-                            If chkUseGmail.Checked Then
-                                .From = New MailAddress("ridgeway17gordon@gmail.com", "Docket Control 25")
-                                .Bcc.Add(New MailAddress(strDocketControlEmail))
-                            Else
-                                .From = New MailAddress(strDocketControlEmail, "DocketControl")
-                            End If
+                            .From = New MailAddress(strDocketControlEmail, "DocketControl")
                             .IsBodyHtml = True
                         End With
 
-                        ' Email notices to the appropriate parties
-                        If .Fields("Trademark").Value = 0 Then
-                            rstNotify.Open("select Email from v_NotifyEmail where Email <> 'Admin' and DocketID = " & .Fields("DocketID").Value & " ORDER BY Email", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
-                            With rstNotify
-                                If .EOF Then
-                                    strHTML = "<HTML><BODY><font color=""red""<P>" &
-                                            "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
-                                    'If chkUseGmail.CheckState = CheckState.Checked Then
-                                    '    strTo = strGordonPrince
-                                    'Else
-                                    strTo = strAdminEmail
-                                    'End If
-                                    Email.To.Add(New MailAddress(strTo))
-                                Else
-                                    strHTML = "<HTML><BODY>"
-                                    strTo1 = .Fields("Email").Value & "@evanspetree.com"
-                                    'If chkUseGmail.CheckState = CheckState.Checked Then
-                                    '    Email.To.Add(New MailAddress(strGordonPrince))
-                                    'Else
-                                    Email.To.Add(New MailAddress(strTo1))
-                                    'End If
-                                    strTo = strTo1
-                                    .MoveNext()
-                                    Do Until .EOF
-                                        strTo1 = .Fields("Email").Value & "@evanspetree.com"
-                                        'If chkUseGmail.CheckState = CheckState.Unchecked Then
-                                        Email.To.Add(New MailAddress(strTo1))
-                                        'End If
-                                        strTo &= ", " & strTo1
-                                        .MoveNext()
-                                    Loop
-                                End If
-                                .Close()
-                            End With
+                        'Email notices to the appropriate parties
+                        If chkSendToGordon.Checked Then
+                            strTo = strGordonPrince
+                            Email.To.Add(strGordonPrince)
                         Else
-                            strHTML = "<HTML><BODY>"
-                            strTo = strDocketIPEmail
-                            'If chkUseGmail.CheckState = CheckState.Checked Then
-                            '    Email.To.Add(New MailAddress(strGordonPrince))
-                            'Else
-                            Email.To.Add(New MailAddress(strTo))
-                            'End If
+                            If .Fields("Trademark").Value = 0 Then
+                                rstNotify.Open("select Email from v_NotifyEmail where Email <> 'Admin' and DocketID = " & .Fields("DocketID").Value & " ORDER BY Email", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
+                                With rstNotify
+                                    If .EOF Then
+                                        strHTML = "<HTML><BODY><font color=""red""<P>" &
+                                                "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
+                                        strTo = strAdminEmail
+                                        Email.To.Add(New MailAddress(strTo))
+                                    Else
+                                        strHTML = "<HTML><BODY>"
+                                        strTo1 = .Fields("Email").Value & "@evanspetree.com"
+                                        Email.To.Add(New MailAddress(strTo1))
+                                        strTo = strTo1
+                                        .MoveNext()
+                                        Do Until .EOF
+                                            strTo1 = .Fields("Email").Value & "@evanspetree.com"
+                                            'If chkUseGmail.CheckState = CheckState.Unchecked Then
+                                            Email.To.Add(New MailAddress(strTo1))
+                                            'End If
+                                            strTo &= ", " & strTo1
+                                            .MoveNext()
+                                        Loop
+                                    End If
+                                    .Close()
+                                End With
+                            Else
+                                strHTML = "<HTML><BODY>"
+                                strTo = strDocketIPEmail
+                                Email.To.Add(New MailAddress(strTo))
+                            End If
+                            ' 1/9/2013 added this (strTo is used in the body of the email below)
+                            strTo = Replace(strTo, "@evanspetree.com", "")
                         End If
-                        ' 1/9/2013 added this (strTo is used in the body of the email below)
-                        strTo = Replace(strTo, "@evanspetree.com", "")
 
                         ' 1/16/2013 added this
                         If .Fields("Completed").Value <> 0 Then
@@ -280,9 +264,7 @@ SendEmail:
                             'Debug.Print(strHTML)
                         End If
 
-                        'If Not chkUseGmail.Checked Then
                         Email.To.Add(New MailAddress(strAdminEmail))
-                        'End If
 
                         If chkDontSendMail.CheckState = CheckState.Unchecked Then
                             Email.Body = strHTML & HTMLbody(rst, strTo) & "</P></BODY></HTML>"
@@ -336,7 +318,7 @@ FinishedLoop:
 
     Private Sub cmdEmailNotices_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdEmailNotices.Click
         Const strTitle As String = "E-mail Notices"
-        Dim datCriteria As Date, datCalendar As Date
+        Dim datCriteria As Date
         Dim strSQL As String
         Dim rstMark As New ADODB.Recordset, rstNotify As New ADODB.Recordset
         Dim bMark As Boolean, strFolder As String, strFile As String
@@ -352,41 +334,30 @@ FinishedLoop:
         strFolder &= "\ShowIP\"
 
         Try
-            datCalendar = CDate(txtCalendar.Text)
-            datCriteria = CDate(txtNotice.Text)
+            If Not Date.TryParse(txtNotice.Text, datCriteria) Then
+                MsgBox("Notice E-mail date is not a valid date.", vbInformation + vbOKOnly, strTitle)
+                Exit Sub
+            End If
             ' even if there are no items, an email will be sent to the strAdmin to that effect. So SMTP needs to be initialized
             '12/22/2021
             Dim SMTP As New SmtpClient
             With SMTP
                 .UseDefaultCredentials = False
-                If chkUseGmail.Checked Then
-                    .Host = "smtp.gmail.com"
-                    .Credentials = New NetworkCredential("ridgeway17gordon@gmail.com", "OJLyWoqqP##UWJH")
-                Else
-                    .Host = strHost
-                    .Credentials = New NetworkCredential(strDocketControlEmail, "friday15")
-                End If
+                .Host = strHost
+                .Credentials = New NetworkCredential(strDocketControlEmail, "friday15")
                 .Port = 587
                 .EnableSsl = True
             End With
 
             cnn.Open(strConnection)
             rst = New ADODB.Recordset
-            'strSQL = "select * from Docket WHERE DueDate > '10/23/2021' AND DueDateEmailed IS NULL AND Completed = 0 AND Canceled = 0 " &
-            '                    "AND (Trademark = 0 OR (Trademark = 1 AND MarkID > 0)) " &
-            '                    "AND ((NoticeFinal <= '" & datCriteria & "' AND (NoticeFinalEmailed IS NULL OR NoticeFinalEmailed > '2/25/2022'))" &
-            '                                " OR (TmNotice7 <= '" & datCriteria & "' AND (TmNotice7Emailed IS NULL OR TmNotice7Emailed > '2/25/2022'))" &
-            '                                " OR (TmNotice30 <= '" & datCriteria & "' AND (TmNotice30Emailed IS NULL OR TmNotice30Emailed > '2/25/2022'))" &
-            '                                " OR (Notice2 <= '" & datCriteria & "' AND (Notice2Emailed IS NULL OR Notice2Emailed > '2/25/2022'))" &
-            '                                " OR (Notice1 <= '" & datCriteria & "' AND (Notice1Emailed IS NULL OR Notice1Emailed > '2/25/2022')))" &
-            '                " ORDER BY DueDate, DocketID"
             strSQL = "select * from Docket WHERE DueDate > '10/23/2021' AND DueDateEmailed IS NULL AND Completed = 0 AND Canceled = 0 " &
                                 "AND (Trademark = 0 OR (Trademark = 1 AND MarkID > 0)) " &
-                                "AND ((NoticeFinal <= '" & datCriteria & "' AND NoticeFinalEmailed IS NULL)" &
-                                            " OR (TmNotice7 <= '" & datCriteria & "' AND TmNotice7Emailed IS NULL)" &
-                                            " OR (TmNotice30 <= '" & datCriteria & "' AND TmNotice30Emailed IS NULL)" &
-                                            " OR (Notice2 <= '" & datCriteria & "' AND Notice2Emailed IS NULL)" &
-                                            " OR (Notice1 <= '" & datCriteria & "' AND Notice1Emailed IS NULL))" &
+                                "AND ((NoticeFinal <= '" & txtNotice.Text & "' AND NoticeFinalEmailed IS NULL)" &
+                                            " OR (TmNotice7 <= '" & txtNotice.Text & "' AND TmNotice7Emailed IS NULL)" &
+                                            " OR (TmNotice30 <= '" & txtNotice.Text & "' AND TmNotice30Emailed IS NULL)" &
+                                            " OR (Notice2 <= '" & txtNotice.Text & "' AND Notice2Emailed IS NULL)" &
+                                            " OR (Notice1 <= '" & txtNotice.Text & "' AND Notice1Emailed IS NULL))" &
                             " ORDER BY DueDate, DocketID"
             'Console.WriteLine(strSQL)
             With rst
@@ -396,14 +367,7 @@ FinishedLoop:
                     If SkipNotice(.Fields("MarkID").Value) Then GoTo NextNotice
                     Using Email As New MailMessage
                         With Email
-
-                            If chkUseGmail.Checked Then
-                                .From = New MailAddress("ridgeway17gordon@gmail.com", "Docket Control 25")
-                                .Bcc.Add(New MailAddress(strDocketControlEmail))
-                            Else
-                                .From = New MailAddress(strDocketControlEmail, "DocketControl")
-                            End If
-
+                            .From = New MailAddress(strDocketControlEmail, "DocketControl")
                             .IsBodyHtml = True
                             If Not IsDBNull(rst.Fields("NoticeFinal").Value) Then
                                 If rst.Fields("NoticeFinal").Value <= datCriteria Then
@@ -466,39 +430,35 @@ HaveSubject:
                         End If
 
                         ' send email notices to the appropriate parties
-                        rstNotify.Open("select Email from v_NotifyEmail where Email <> 'Admin' and DocketID = " & .Fields("DocketID").Value & " ORDER BY Email", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
-                        With rstNotify
-                            If .EOF Then
-                                strHTML = "<HTML><BODY><P><font color=""red""" &
-                                          "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
-                                'If chkUseGmail.CheckState = CheckState.Checked Then
-                                '    strTo = strGordonPrince
-                                'Else
-                                strTo = strAdminEmail
-                                'End If
-                                Email.To.Add(New MailAddress(strTo))
-                            Else
-                                strHTML = "<HTML><BODY>"
-                                strTo1 = .Fields("Email").Value & "@evanspetree.com"
-                                'If chkUseGmail.CheckState = CheckState.Checked Then
-                                '    Email.To.Add(New MailAddress(strGordonPrince))
-                                'Else
-                                Email.To.Add(New MailAddress(strTo1))
-                                'End If
-                                strTo = strTo1
-                                .MoveNext()
-                                Do Until .EOF
+                        If chkSendToGordon.Checked Then
+                            strTo = strGordonPrince
+                            Email.To.Add(strGordonPrince)
+                        Else
+                            rstNotify.Open("select Email from v_NotifyEmail where Email <> 'Admin' and DocketID = " & .Fields("DocketID").Value & " ORDER BY Email", cnn, ADODB.CursorTypeEnum.adOpenForwardOnly, ADODB.LockTypeEnum.adLockReadOnly, ADODB.CommandTypeEnum.adCmdText)
+                            With rstNotify
+                                If .EOF Then
+                                    strHTML = "<HTML><BODY><P><font color=""red""" &
+                                              "<strong>NO ONE WAS NOTIFIED OF THE FOLLOWING DOCKET CONTROL ITEM.</strong></font>" & " DocketID=" & rst.Fields("DocketID").Value & "</P>"
+                                    strTo = strAdminEmail
+                                    Email.To.Add(New MailAddress(strTo))
+                                Else
+                                    strHTML = "<HTML><BODY>"
                                     strTo1 = .Fields("Email").Value & "@evanspetree.com"
-                                    'If chkUseGmail.CheckState = CheckState.Unchecked Then
                                     Email.To.Add(New MailAddress(strTo1))
-                                    'End If
-                                    strTo &= ", " & strTo1
+                                    strTo = strTo1
                                     .MoveNext()
-                                Loop
-                            End If
-                            .Close()
-                        End With
-                        strTo = Replace(strTo, "@evanspetree.com", "")
+                                    Do Until .EOF
+                                        strTo1 = .Fields("Email").Value & "@evanspetree.com"
+                                        Email.To.Add(New MailAddress(strTo1))
+                                        strTo &= ", " & strTo1
+                                        .MoveNext()
+                                    Loop
+                                End If
+                                .Close()
+                            End With
+                            strTo = Replace(strTo, "@evanspetree.com", "")
+                        End If
+
                         If bMark = True Then
                             strFile = strFolder & "Mark" & CStr(rstMark.Fields("MarkID").Value) & ".bat"
                             'Pass the file path and the file name to the StreamWriter constructor.
@@ -527,10 +487,8 @@ HaveSubject:
                             bMark = False
                         End If
 
-                        If rst.Fields("Trademark").Value <> 0 Then
-                            'If chkUseGmail.CheckState = CheckState.Unchecked Then
+                        If Not chkSendToGordon.Checked AndAlso rst.Fields("Trademark").Value <> 0 Then
                             Email.To.Add(New MailAddress(strDocketIPEmail))
-                            'End If
                         End If
 
                         If chkDontSendMail.CheckState = CheckState.Unchecked Then
@@ -585,26 +543,16 @@ FinishedLoop:
                 Using Email As New MailMessage
                     With Email
                         .IsBodyHtml = True
-
-                        If chkUseGmail.Checked Then
-                            .From = New MailAddress("ridgeway17gordon@gmail.com", "Docket Control 25")
-                            .Bcc.Add(New MailAddress(strDocketControlEmail))
-                        Else
-                            .From = New MailAddress(strDocketControlEmail, "DocketControl")
-                        End If
-
+                        .From = New MailAddress(strDocketControlEmail, "DocketControl")
                         .Subject = "Docket Control E-mail Summary"
                         .To.Add(New MailAddress("DocketSummary@evanspetree.com"))
-                        If chkUseGmail.Checked Then
-                            .Bcc.Add(New MailAddress(strDocketControlEmail))
-                        End If
                         If Len(strDeadlines) > 0 Then
                             .Body = strDeadlines
                         Else
                             .Body = "<P><font color=""red""<strong>* * * THE DEADLINES DID NOT PROCESS PROPERLY * * *</strong></font></P>"
                         End If
                         .Body = .Body & IIf(intCounter = 1, "One reminder E-mail was", intCounter & " reminder E-mails were") &
-                                " sent for items with Notice dates through " & datCriteria & ".</P>"
+                                " sent for items with Notice dates through " & txtNotice.Text & ".</P>"
                     End With
                     'wait 2 seconds to make sure the summary email is the last one sent
                     System.Threading.Thread.Sleep(1000)
@@ -615,7 +563,7 @@ FinishedLoop:
             End If
             If chkShowMessages.Checked Then MsgBox("Finished sending " & intCounter & " Email(s)", MsgBoxStyle.Information, strTitle)
         Catch ex As Exception
-            MsgBox("Invalid date entered on form.")
+            MsgBox(Err.Description, vbExclamation + vbOKOnly, strTitle)
         Finally
             If rst.State <> 0 Then rst.Close()
             rst = Nothing
